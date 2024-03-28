@@ -1,4 +1,4 @@
-name: Update EC2 Instances
+name: Deploy to EC2 Instances
 
 on:
   push:
@@ -6,31 +6,31 @@ on:
       - main
 
 jobs:
-  update_ec2:
+  deploy:
+    name: Deploy to EC2 Instances
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout Repository
+      - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Install SSH Client
-        run: sudo apt-get install openssh-client -y
+      - name: Deploy to EC2 Instance 1
+        uses: appleboy/ssh-action@master
+        with:
+          host: 34.207.241.206
+          username: ubuntu
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            sudo rsync -avz --delete /var/www/html/news/ ubuntu@34.207.241.206:/var/www/html/news/
+            sudo chown -R ec2-user:apache /var/www/html/news/
+            sudo chmod -R 755 /var/www/html/news/
 
-      - name: Prepare SSH Key
-        run: |
-          mkdir -p ~/.ssh
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
-          chmod 600 ~/.ssh/id_rsa
-
-      - name: Add EC2 Host Keys
-        run: |
-          ssh-keyscan 34.207.241.206 >> ~/.ssh/known_hosts
-          ssh-keyscan 3.101.29.155 >> ~/.ssh/known_hosts
-
-      - name: Update EC2 Instance 1
-        run: |
-          ssh -i ~/.ssh/id_rsa ubuntu@34.207.241.206 'cd /var/www/html/news && git pull'
-
-      - name: Update EC2 Instance 2
-        run: |
-          ssh -i ~/.ssh/id_rsa ubuntu@3.101.29.155 'cd /var/www/html/news && git pull'
+      - name: Deploy to EC2 Instance 2
+        uses: appleboy/ssh-action@master
+        with:
+          host: 3.101.29.155
+          username: ubuntu
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            sudo rsync -avz --delete /var/www/html/news ubuntu@3.101.29.155:/var/www/html/news/
+            sudo chown -R ec2-user:apache /var/www/html/news/
+            sudo chmod -R 755 /var/www/html/news/
