@@ -14,15 +14,6 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Install SSH Client
-        run: sudo apt-get install openssh-client -y
-
-      - name: Add EC2 Host Keys
-        run: |
-          mkdir -p ~/.ssh
-          ssh-keyscan 34.207.241.206 >> ~/.ssh/known_hosts
-          ssh-keyscan 3.101.29.155 >> ~/.ssh/known_hosts
-
       - name: Deploy to EC2 Instance 1
         uses: appleboy/ssh-action@master
         with:
