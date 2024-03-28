@@ -18,15 +18,15 @@ jobs:
 
       - name: Copy SSH Key
         run: |
-          mkdir -p ~/.ssh
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
-          chmod 600 ~/.ssh/id_rsa
-          ssh-keyscan 34.207.241.206 >> ~/.ssh/known_hosts
+          sudo mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" | sudo tee ~/.ssh/id_rsa > /dev/null
+          sudo chmod 600 ~/.ssh/id_rsa
+          sudo ssh-keyscan 34.207.241.206 >> ~/.ssh/known_hosts
 
       - name: Update EC2 Instance 1
         run: |
-          ssh ubuntu@34.207.241.206 'cd /var/www/html/news && git pull'
+          sudo ssh ubuntu@34.207.241.206 'cd /var/www/html/news && git pull'
 
       - name: Update EC2 Instance 2
         run: |
-          ssh ubuntu@3.101.29.155  'cd /var/www/html/news && git pull'
+          sudo ssh ubuntu@3.101.29.155 'cd /var/www/html/news && git pull'
