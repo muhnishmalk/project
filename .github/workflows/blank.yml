@@ -13,20 +13,24 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v2
 
-      - name: Install SSH
+      - name: Install SSH Client
         run: sudo apt-get install openssh-client -y
 
-      - name: Copy SSH Key
+      - name: Prepare SSH Key
         run: |
-          sudo mkdir -p ~/.ssh
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" | sudo tee ~/.ssh/id_rsa > /dev/null
-          sudo chmod 600 ~/.ssh/id_rsa
-          sudo sh -c "ssh-keyscan 34.207.241.206 >> ~/.ssh/known_hosts"
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+
+      - name: Add EC2 Host Keys
+        run: |
+          ssh-keyscan 34.207.241.206 >> ~/.ssh/known_hosts
+          ssh-keyscan 3.101.29.155 >> ~/.ssh/known_hosts
 
       - name: Update EC2 Instance 1
         run: |
-          sudo ssh ubuntu@34.207.241.206 'cd /var/www/html/news && git pull'
+          ssh ubuntu@34.207.241.206 'cd /var/www/html/news && git pull'
 
       - name: Update EC2 Instance 2
         run: |
-          sudo ssh ubuntu@3.101.29.155 'cd /var/www/html/news && git pull'
+          ssh ubuntu@3.101.29.155 'cd /var/www/html/news && git pull'
