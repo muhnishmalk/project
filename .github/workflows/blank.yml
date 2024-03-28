@@ -21,7 +21,7 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
             sudo rsync -avz --delete /var/www/html/news/ ubuntu@34.207.241.206:/var/www/html/news/
-            sudo chown -R ec2-user:apache /var/www/html/news/
+            sudo chown -R ubuntu:www-data /var/www/html/news/
             sudo chmod -R 755 /var/www/html/news/
 
       - name: Deploy to EC2 Instance 2
@@ -32,5 +32,5 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
             sudo rsync -avz --delete /var/www/html/news ubuntu@3.101.29.155:/var/www/html/news/
-            sudo chown -R ec2-user:apache /var/www/html/news/
+            sudo chown -R ubuntu:www-data /var/www/html/news/
             sudo chmod -R 755 /var/www/html/news/
