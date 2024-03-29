@@ -3,7 +3,7 @@ name: Update EC2 Instances
 on:
   push:
     branches:
-      - main  # Change this to match your branch name
+      - main
 
 jobs:
   update_ec2:
@@ -13,24 +13,29 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v2
 
-      - name: Install SSH
-        run: sudo apt-get install openssh-client -y
-
-      - name: Debug SSH Private Key
-        run: echo "${{ secrets.SSH_PRIVATE_KEY }}"
-
-      - name: Setup SSH
-        run: |
-          mkdir -p ~/.ssh
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
-          chmod 600 ~/.ssh/id_rsa
-          ssh-keyscan 34.207.241.206 >> ~/.ssh/known_hosts
-
-      - name: Debug SSH Configuration
-        run: cat ~/.ssh/config
+      - name: Authenticate with OIDC via AWS
+        id: oidc_auth
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          role-to-assume: arn:aws:iam::854755582447:role/githubaction_terraform
+          aws-region: us-east-1
 
       - name: Update EC2 Instance 1
         run: |
-          ssh -vvv ubuntu@34.207.241.206 'cd /var/www/html/news && git pull'
+          aws ssm send-command \
+            --document-name "AWS-RunShellScript" \
+            --targets "Key=instanceids,Values=34.207.241.206" \
+            --parameters commands="cd /var/www/html/news && git pull" \
+            --region us-east-1 \
+            --query "Command.CommandId" \
+            --output text
 
-      # Add additional steps for other EC2 instances if needed
+      - name: Update EC2 Instance 2
+        run: |
+          aws ssm send-command \
+            --document-name "AWS-RunShellScript" \
+            --targets "Key=instanceids,Values=3.101.29.155" \
+            --parameters commands="cd /var/www/html/news && git pull" \
+            --region us-west-1 \
+            --query "Command.CommandId" \
+            --output text
