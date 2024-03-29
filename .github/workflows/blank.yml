@@ -16,17 +16,21 @@ jobs:
       - name: Install SSH
         run: sudo apt-get install openssh-client -y
 
-      - name: Copy SSH Key
+      - name: Debug SSH Private Key
+        run: echo "${{ secrets.SSH_PRIVATE_KEY }}"
+
+      - name: Setup SSH
         run: |
-          sudo mkdir -p ~/.ssh
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" | sudo tee ~/.ssh/id_rsa > /dev/null
-          sudo chmod 600 ~/.ssh/id_rsa
-          sudo sh -c "ssh-keyscan 34.207.241.206 >> ~/.ssh/known_hosts"
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan 34.207.241.206 >> ~/.ssh/known_hosts
+
+      - name: Debug SSH Configuration
+        run: cat ~/.ssh/config
 
       - name: Update EC2 Instance 1
         run: |
-          sudo ssh -vvv ubuntu@34.207.241.206 'cd /var/www/html/news && git pull'
-      
-      - name: Update EC2 Instance 2
-        run: |
-          sudo ssh -vvv ubuntu@3.101.29.155 'cd /var/www/html/news && git pull'
+          ssh -vvv ubuntu@34.207.241.206 'cd /var/www/html/news && git pull'
+
+      # Add additional steps for other EC2 instances if needed
