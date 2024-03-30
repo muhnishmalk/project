@@ -13,18 +13,18 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v2
 
-      - name: Authenticate with OIDC via AWS
-        id: oidc_auth
-        uses: aws-actions/configure-aws-credentials@v1
+      - name: Authenticate with AWS
+        uses: aws-actions/configure-aws-credentials@v2
         with:
-          role-to-assume: arn:aws:iam::854755582447:role/githubaction_terraform
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-1
 
       - name: Update EC2 Instance 1
         run: |
           aws ssm send-command \
             --document-name "AWS-RunShellScript" \
-            --targets "Key=instanceids,Values=34.207.241.206" \
+            --targets "Key=instanceids,Values=i-1234567890abcdef0" \
             --parameters commands="cd /var/www/html/news && git pull" \
             --region us-east-1 \
             --query "Command.CommandId" \
@@ -34,7 +34,7 @@ jobs:
         run: |
           aws ssm send-command \
             --document-name "AWS-RunShellScript" \
-            --targets "Key=instanceids,Values=3.101.29.155" \
+            --targets "Key=instanceids,Values=i-abcdef1234567890" \
             --parameters commands="cd /var/www/html/news && git pull" \
             --region us-west-1 \
             --query "Command.CommandId" \
