@@ -24,7 +24,7 @@ jobs:
         run: |
           aws ssm send-command \
             --document-name "AWS-RunShellScript" \
-            --targets "Key=instanceids,Values=i-1234567890abcdef0" \
+            --targets "Key=instanceids,Values=i-01eb6bcd6cd92a12d" \
             --parameters commands="cd /var/www/html/news && git pull" \
             --region us-east-1 \
             --query "Command.CommandId" \
@@ -34,7 +34,7 @@ jobs:
         run: |
           aws ssm send-command \
             --document-name "AWS-RunShellScript" \
-            --targets "Key=instanceids,Values=i-abcdef1234567890" \
+            --targets "Key=instanceids,Values=i-05d58d2a307389dce" \
             --parameters commands="cd /var/www/html/news && git pull" \
             --region us-west-1 \
             --query "Command.CommandId" \
