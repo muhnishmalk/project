@@ -3,7 +3,7 @@ name: Update EC2 Instances
 on:
   push:
     branches:
-      - main
+      - main  # Change this to match your branch name
 
 jobs:
   update_ec2:
@@ -13,29 +13,20 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v2
 
-      - name: Authenticate with AWS
-        uses: aws-actions/configure-aws-credentials@v2
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-east-1
+      - name: Install SSH
+        run: sudo apt-get install openssh-client -y
+
+      - name: Copy SSH Key
+        run: |
+          sudo mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" | sudo tee ~/.ssh/id_rsa > /dev/null
+          sudo chmod 600 ~/.ssh/id_rsa
+          sudo sh -c "ssh-keyscan 34.207.241.206 >> ~/.ssh/known_hosts"
 
       - name: Update EC2 Instance 1
         run: |
-          aws ssm send-command \
-            --document-name "AWS-RunShellScript" \
-            --targets "Key=instanceids,Values=i-01eb6bcd6cd92a12d" \
-            --parameters commands="cd /var/www/html/news && git pull" \
-            --region us-east-1 \
-            --query "Command.CommandId" \
-            --output text
+          sudo ssh ubuntu@34.207.241.206 'cd /var/www/html/news && git pull'
 
       - name: Update EC2 Instance 2
         run: |
-          aws ssm send-command \
-            --document-name "AWS-RunShellScript" \
-            --targets "Key=instanceids,Values=i-05d58d2a307389dce" \
-            --parameters commands="cd /var/www/html/news && git pull" \
-            --region us-west-1 \
-            --query "Command.CommandId" \
-            --output text
+          sudo ssh ubuntu@3.101.29.155 'cd /var/www/html/news && git pull'
