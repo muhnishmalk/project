@@ -25,8 +25,8 @@ jobs:
 
       - name: Update EC2 Instance 1
         run: |
-          sudo ssh ubuntu@34.207.241.206 'cd /var/www/html/news && git pull'
+          sudo ssh ubuntu@34.207.241.206 'cd /home/ubuntu/news && git pull'
 
       - name: Update EC2 Instance 2
         run: |
-          sudo ssh ubuntu@3.101.29.155 'cd /var/www/html/news && git pull'
+          sudo ssh ubuntu@3.101.29.155 'cd /home/ubuntu/news && git pull'
