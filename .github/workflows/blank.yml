@@ -13,7 +13,7 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v2
 
-    - name: Sync code to EC2
+    - name: Sync code to EC2 (Instance 1)
       uses: appleboy/scp-action@master
       with:
         host: 34.207.241.206
@@ -21,3 +21,12 @@ jobs:
         key: ${{ secrets.EC2_SSH_KEY }}  
         source: "." 
         target: "/var/www/html/news"  
+
+    - name: Sync code to EC2 (Instance 2)
+      uses: appleboy/scp-action@master
+      with:
+        host: 3.101.29.155
+        username: ${{ secrets.EC2_USERNAME }}  
+        key: ${{ secrets.EC2_SSH_KEY }}  
+        source: "." 
+        target: "/var/www/html/news"
