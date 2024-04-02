@@ -1,32 +1,23 @@
-name: Update EC2 Instances
+name: Update EC2 with GitHub changes
 
 on:
   push:
     branches:
-      - main
+      - main  # Replace with your branch name
 
 jobs:
   update_ec2:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v2
+    - name: Checkout code
+      uses: actions/checkout@v2
 
-      - name: Install SSH
-        run: sudo apt-get install openssh-client -y
-
-      - name: Copy SSH Key
-        run: |
-          sudo mkdir -p ~/.ssh
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" | sudo tee ~/.ssh/id_rsa > /dev/null
-          sudo chmod 600 ~/.ssh/id_rsa
-          sudo sh -c "ssh-keyscan 34.207.241.206 >> ~/.ssh/known_hosts"
-      
-      - name: Update EC2 Instance 1
-        run: |
-          sudo ssh -v ubuntu@34.207.241.206 'cd /var/www/html/news && git pull'
-
-      - name: Update EC2 Instance 2
-        run: |
-          sudo ssh -v ubuntu@3.101.29.155 'cd /var/www/html/news && git pull'
+    - name: Sync code to EC2
+      uses: appleboy/scp-action@master
+      with:
+        host: 34.207.241.206
+        username: ${{ secrets.EC2_USERNAME }}  # Add your EC2 username as a secret
+        key: ${{ secrets.EC2_SSH_KEY }}  # Add your SSH key as a secret
+        source: "."  # Path to your local code repository
+        target: "/var/www/html/news"  # Path on your EC2 instance
