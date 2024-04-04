@@ -16,7 +16,7 @@ jobs:
     - name: Sync code to EC2 (Instance 1)
       uses: appleboy/scp-action@master
       with:
-        host: 34.207.241.206
+        host: 54.208.250.242
         username: ${{ secrets.EC2_USERNAME }}  
         key: ${{ secrets.EC2_SSH_KEY }}  
         source: "." 
@@ -25,7 +25,7 @@ jobs:
     - name: Sync code to EC2 (Instance 2)
       uses: appleboy/scp-action@master
       with:
-        host: 3.101.29.155
+        host: 52.9.77.26
         username: ${{ secrets.EC2_USERNAME }}  
         key: ${{ secrets.EC2_SSH_KEY }}  
         source: "." 
